@@ -102,6 +102,7 @@ photos.forEach((photo, i) => {
     const track = gallery?.querySelector('.gallery-track');
     if (!gallery || !track) return;
 
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
     const bar = document.getElementById('gallery-progress-bar');
     const items = gallery.querySelectorAll('.gallery-item');
     const photos = [...items].map(el => el.querySelector('img')?.src || '').filter(Boolean);
@@ -118,34 +119,37 @@ photos.forEach((photo, i) => {
       gallery.scrollBy({ left: dir * itemWidth, behavior: 'smooth' });
     }
 
-    // Cursor-based: click left/right half to scroll (but not on images)
-    gallery.addEventListener('click', (e) => {
-      if (e.target.tagName === 'IMG') return;
-      const rect = gallery.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      if (x < rect.width / 2) scrollBy(-1);
-      else scrollBy(1);
-    });
+    // Horizontal-scroll interactivity (desktop only; mobile is vertical)
+    if (!isMobile) {
+      // Cursor-based: click left/right half to scroll (but not on images)
+      gallery.addEventListener('click', (e) => {
+        if (e.target.tagName === 'IMG') return;
+        const rect = gallery.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        if (x < rect.width / 2) scrollBy(-1);
+        else scrollBy(1);
+      });
 
-    // Cursor: default on images, arrows in gaps
-    gallery.addEventListener('mousemove', (e) => {
-      if (e.target.tagName === 'IMG' || e.target.closest('.gallery-text-card')) {
-        gallery.style.cursor = 'default';
-        return;
-      }
-      const rect = gallery.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      gallery.style.cursor = x < rect.width / 2 ? 'url(/images/left-arrow.svg) 8 15, w-resize' : 'url(/images/right-arrow.svg) 8 15, e-resize';
-    });
+      // Cursor: default on images, arrows in gaps
+      gallery.addEventListener('mousemove', (e) => {
+        if (e.target.tagName === 'IMG' || e.target.closest('.gallery-text-card')) {
+          gallery.style.cursor = 'default';
+          return;
+        }
+        const rect = gallery.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        gallery.style.cursor = x < rect.width / 2 ? 'url(/images/left-arrow.svg) 8 15, w-resize' : 'url(/images/right-arrow.svg) 8 15, e-resize';
+      });
+
+      // Wheel → horizontal scroll
+      gallery.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // natural horizontal already
+        e.preventDefault();
+        gallery.scrollBy({ left: e.deltaY, behavior: 'auto' });
+      }, { passive: false });
+    }
 
     gallery.addEventListener('scroll', update, { passive: true });
-
-    // Wheel → horizontal scroll
-    gallery.addEventListener('wheel', (e) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // natural horizontal already
-      e.preventDefault();
-      gallery.scrollBy({ left: e.deltaY, behavior: 'auto' });
-    }, { passive: false });
 
     // ---- Lightbox ----
     const lightbox = document.getElementById('lightbox');
@@ -207,8 +211,8 @@ photos.forEach((photo, i) => {
         if (e.key === 'ArrowLeft') { e.preventDefault(); lightboxNav(-1); return; }
         if (e.key === 'ArrowRight') { e.preventDefault(); lightboxNav(1); return; }
       }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); scrollBy(-1); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); scrollBy(1); }
+      if (e.key === 'ArrowLeft' && !isMobile) { e.preventDefault(); scrollBy(-1); }
+      if (e.key === 'ArrowRight' && !isMobile) { e.preventDefault(); scrollBy(1); }
     });
 
     update();
@@ -334,17 +338,62 @@ photos.forEach((photo, i) => {
   /* ---- Responsive ---- */
 
   @media (max-width: 768px) {
-    .project-page-header {
-      padding: 20px 20px 12px;
+    .project-page {
+      height: auto;
     }
 
-    .gallery-item {
-      height: 55vh;
-      padding: 12px;
+    .gallery-scroll {
+      overflow: visible;
+      scroll-snap-type: none;
     }
 
     .gallery-track {
-      padding: 0 20px;
+      flex-direction: column;
+      width: 100%;
+      padding: 0;
+      align-items: stretch;
+    }
+
+    .gallery-item:first-of-type {
+      margin-top: 50px;
+    }
+
+    .gallery-item {
+      width: 100%;
+      height: auto;
+      max-height: none;
+      padding: 0 0 30px;
+      scroll-snap-align: none;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      display: block;
+    }
+
+    .gallery-video {
+      width: 100%;
+      height: auto;
+      padding: 0;
+    }
+
+    .gallery-video iframe {
+      width: 100%;
+      height: 56.25vw;
+      max-width: 100%;
+    }
+
+    .gallery-text-card {
+      width: 100%;
+      max-width: 100%;
+      padding: 24px 16px;
+      scroll-snap-align: none;
+    }
+
+    .gallery-progress {
+      display: none;
     }
   }
 
