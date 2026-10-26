@@ -363,11 +363,11 @@ a {
 }
 
 .site-main .home-projects {
-  padding-top: 120px;
+  padding-top: 60px;
 }
 
 .site-main .section + .section {
-  padding-top: 120px;
+  padding-top: 60px;
 }
 
 .section-header {
@@ -659,6 +659,15 @@ a {
     display: flex;
   }
 
+  .carousel-track {
+    height: 60vh;
+  }
+
+  .carousel-thumb {
+    width: 48px;
+    height: 48px;
+  }
+
   .site-layout {
     flex-direction: column;
   }
@@ -691,7 +700,7 @@ a {
   }
 
   .site-main {
-    padding-top: 70px;
+    padding-top: 32px;
   }
 
   .sidebar-footer {
