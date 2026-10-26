@@ -1,55 +1,84 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import Carousel from '../components/Carousel.astro';
 
-const projects = (await getCollection('projects')).sort((a, b) => {
-  if (a.data.featured && !b.data.featured) return -1;
-  if (!a.data.featured && b.data.featured) return 1;
-  return a.data.order - b.data.order;
-});
+const projects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const slideshowImages = [
+  '/images/slideshow/00.jpg',
+  '/images/slideshow/01.jpg',
+  '/images/slideshow/02.jpg',
+  '/images/slideshow/03.jpg',
+  '/images/slideshow/04.jpg',
+  '/images/slideshow/05.jpg',
+  '/images/slideshow/06.jpg',
+  '/images/slideshow/07.jpg',
+  '/images/slideshow/08.jpg',
+  '/images/slideshow/09.jpg',
+  '/images/slideshow/10.jpg',
+  '/images/slideshow/11.jpg',
+  '/images/slideshow/12.jpg',
+  '/images/slideshow/13.jpg',
+  '/images/slideshow/14.jpg',
+  '/images/slideshow/15.jpg',
+];
 ---
 
-<BaseLayout title="Home" description="Lance Shields Photography — lens-based artist living in San Francisco. Selected work, photo projects, and zines.">
-  <section class="home-hero">
-    <div class="wrap">
-      <h1>Lance Shields Photography</h1>
-      <p>Selected Work</p>
-    </div>
-  </section>
+<BaseLayout title="Home" description="Lance Shields Photography — lens-based artist living in San Francisco.">
+  <div class="wrap">
+    <Carousel images={slideshowImages} />
+  </div>
 
-  <section class="section">
+  <section class="section home-projects">
     <div class="wrap">
       <div class="section-header">
         <h2>Recent Projects</h2>
       </div>
 
-      <div class="project-grid">
+      <div class="featured-grid">
         {
           projects.map((project) => (
-            <a href={`/${project.id}`} class="project-card">
-              <div class="project-card-image">
+            <div class="project-card">
+              <a href={`/${project.id}`} class="featured-image">
                 <img
                   src={project.data.coverImage}
                   alt={project.data.title}
                   loading="lazy"
-                  width="600"
-                  height="450"
+                  width="482"
+                  height="482"
                 />
+              </a>
+              <div class="featured-text">
+                <h3>{project.data.title}</h3>
+                <p>{project.data.description}</p>
+                <a href={`/${project.id}`} class="view-link">View project</a>
               </div>
-              <div class="project-card-title">{project.data.title}</div>
-              <div class="project-card-desc">{project.data.description}</div>
-            </a>
+            </div>
           ))
         }
       </div>
 
-      {
-        projects.length === 0 && (
-          <p style="color: var(--muted); margin-top: 40px;">
-            Add projects to <code>src/content/projects/</code> as markdown files.
-          </p>
-        )
-      }
+      <a href="/all-projects" class="all-projects-link">All projects</a>
+</div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="video-module">
+        <div class="video-embed">
+          <iframe
+            src="https://www.youtube.com/embed/hl5iLDLIB6U"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <p class="video-caption">SF Artists Alumni Spotlight: an artist talk on June 2, 2025, between myself, the curator Beth Waldman, and photographic artist Anni Lopponen from the Metaphors of Recent Times photo exhibit.</p>
+      </div>
     </div>
   </section>
 </BaseLayout>

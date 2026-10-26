@@ -1,0 +1,168 @@
+<div class="carousel" id="home-carousel">
+  <div class="carousel-track">
+    {Astro.props.images.map((img, i) => (
+      <div class="carousel-slide" class:list={[{ active: i === 0 }]}>
+        <img src={img} alt="" loading={i === 0 ? 'eager' : 'lazy'} />
+      </div>
+    ))}
+    <button class="carousel-side-arrow carousel-prev" id="carousel-prev" aria-label="Previous">
+      <svg width="10" height="18" viewBox="0 0 10 18"><path d="M9 1L1 9l8 8" stroke="#fff" stroke-width="2" fill="none"/></svg>
+    </button>
+    <button class="carousel-side-arrow carousel-next" id="carousel-next" aria-label="Next">
+      <svg width="10" height="18" viewBox="0 0 10 18"><path d="M1 1l8 8-8 8" stroke="#fff" stroke-width="2" fill="none"/></svg>
+    </button>
+  </div>
+
+  <div class="carousel-thumbs" id="carousel-thumbs">
+    {Astro.props.images.map((img, i) => (
+      <button
+        type="button"
+        class="carousel-thumb"
+        class:list={[{ active: i === 0 }]}
+        data-index={i}
+        aria-label={`Slide ${i + 1}`}
+      >
+        <img src={img} alt="" loading="lazy" />
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  (function () {
+    const carousel = document.getElementById('home-carousel');
+    if (!carousel) return;
+    const slides = carousel.querySelectorAll('.carousel-slide');
+    const thumbs = carousel.querySelectorAll('.carousel-thumb');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    const thumbsContainer = document.getElementById('carousel-thumbs');
+    let current = 0;
+    const interval = 3000;
+    let timer;
+
+    function goTo(index) {
+      slides[current].classList.remove('active');
+      thumbs[current].classList.remove('active');
+      current = (index + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      thumbs[current].classList.add('active');
+      // Scroll thumbnail into view
+      thumbs[current]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    function next() { goTo(current + 1); }
+    function prev() { goTo(current - 1); }
+    function start() { clearInterval(timer); timer = setInterval(next, interval); }
+    start();
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener('click', () => { goTo(Number(thumb.dataset.index)); start(); });
+    });
+    prevBtn?.addEventListener('click', () => { prev(); start(); });
+    nextBtn?.addEventListener('click', () => { next(); start(); });
+  })();
+</script>
+
+<style>
+  .carousel {
+    position: relative;
+    width: 100%;
+  }
+
+  .carousel-track {
+    position: relative;
+    width: 100%;
+    height: 800px;
+    background: var(--bg-page);
+  }
+
+  .carousel-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel-slide.active {
+    opacity: 1;
+  }
+
+  .carousel-slide img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Side arrows */
+  .carousel-side-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #000;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: opacity 0.2s;
+  }
+
+  .carousel-side-arrow:hover {
+    opacity: 0.8;
+  }
+
+  .carousel-prev {
+    left: 22px;
+  }
+
+  .carousel-next {
+    right: 22px;
+  }
+
+  /* Thumbnail strip */
+  .carousel-thumbs {
+    display: flex;
+    gap: 4px;
+    padding: 8px 0 0;
+    overflow-x: auto;
+    justify-content: center;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .carousel-thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel-thumb {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+    background: #f0efe9;
+    transition: border-color 0.2s;
+  }
+
+  .carousel-thumb.active {
+    border-color: #000;
+  }
+
+  .carousel-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+</style>
