@@ -11,27 +11,60 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { title, description, photos } = project.data;
+const { title, description, photos, videos, textAfter } = project.data;
 const bodyText = project.body;
+
+// Split body text on <!--split--> marker
+const splitIdx = bodyText.indexOf('<!--split-->');
+const textPart1 = splitIdx > 0 ? bodyText.slice(0, splitIdx).trim() : bodyText;
+const textPart2 = splitIdx > 0 ? bodyText.slice(splitIdx + 13).trim() : '';
+
+// Build a merged list of gallery items: photos + videos at correct positions
+const galleryItems: { type: 'photo' | 'video'; index: number; src?: string; url?: string }[] = [];
+photos.forEach((photo, i) => {
+  galleryItems.push({ type: 'photo', index: i, src: photo });
+  // Insert videos after this photo index
+  videos?.forEach((v) => {
+    if (v.after === i) galleryItems.push({ type: 'video', index: i, url: v.url });
+  });
+});
 ---
 
 <BaseLayout title={title} description={description}>
   <div class="project-page">
     <div class="gallery-scroll" id="gallery">
       <div class="gallery-track">
-        {photos.map((photo: string, i: number) => (
+        {galleryItems.map((item, i) => (
           <>
-            <div class="gallery-item" data-index={i}>
-              <img
-                src={photo}
-                alt={`${title} photograph ${i + 1}`}
-                loading={i < 2 ? 'eager' : 'lazy'}
-              />
-            </div>
-            {i === 1 && (
+            {item.type === 'photo' && item.src && (
+              <div class="gallery-item" data-index={i}>
+                <img
+                  src={item.src}
+                  alt={`${title} photograph`}
+                  loading={i < 2 ? 'eager' : 'lazy'}
+                />
+              </div>
+            )}
+            {item.type === 'video' && item.url && (
+              <div class="gallery-video">
+                <iframe
+                  src={item.url}
+                  title={`${title} video`}
+                  frameborder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            )}
+            {item.type === 'photo' && item.index === 1 && (
               <div class="gallery-text-card">
                 <h1>{title}</h1>
-                <p>{bodyText}</p>
+                <p>{textPart1}</p>
+              </div>
+            )}
+            {item.type === 'photo' && textAfter?.includes(item.index) && (
+              <div class="gallery-text-card">
+                <p>{textPart2}</p>
               </div>
             )}
           </>
@@ -260,6 +293,24 @@ const bodyText = project.body;
     max-width: 90vw;
     object-fit: contain;
     display: block;
+  }
+
+  .gallery-video {
+    flex-shrink: 0;
+    height: 70vh;
+    max-height: 700px;
+    scroll-snap-align: center;
+    padding: 0 20px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gallery-video iframe {
+    height: 100%;
+    aspect-ratio: 16/9;
+    max-width: 90vw;
+    border: none;
   }
 
   /* ---- Progress Bar ---- */

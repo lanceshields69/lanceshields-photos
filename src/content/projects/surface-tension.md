@@ -4,7 +4,7 @@ description: "With my camera I try to find something that attracts me from what 
 date: 2024-01-15
 featured: true
 order: 4
-coverImage: "/images/surface-tension/01.jpg"
+coverImage: "/images/surface-tension/cover.jpg"
 photos:
   - "/images/surface-tension/01.jpg"
   - "/images/surface-tension/02.jpg"

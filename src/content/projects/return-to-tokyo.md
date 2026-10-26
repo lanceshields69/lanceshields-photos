@@ -4,7 +4,7 @@ description: "Returning to Tokyo with a camera and fresh eyes."
 date: 2023-05-20
 featured: false
 order: 8
-coverImage: "/images/return-to-tokyo/01.jpg"
+coverImage: "/images/return-to-tokyo/cover.jpg"
 photos:
   - "/images/return-to-tokyo/01.jpg"
   - "/images/return-to-tokyo/02.jpg"

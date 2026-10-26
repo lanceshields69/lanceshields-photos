@@ -4,7 +4,7 @@ description: "Photographing our odd life on the west coast."
 date: 2023-09-12
 featured: false
 order: 6
-coverImage: "/images/eighty-sixed-in-la/01.jpg"
+coverImage: "/images/eighty-sixed-in-la/cover.jpg"
 photos:
   - "/images/eighty-sixed-in-la/01.jpg"
   - "/images/eighty-sixed-in-la/02.jpg"

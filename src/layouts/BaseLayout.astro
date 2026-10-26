@@ -34,9 +34,15 @@ const currentPath = Astro.url.pathname;
   <link rel="stylesheet" href="https://use.typekit.net/ljg3lbn.css" />
 </head>
 <body>
-  <button class="hamburger" id="hamburger" aria-label="Menu">
-    <img src="/images/menu.svg" alt="" width="24" height="24" id="hamburger-icon" />
-  </button>
+  <div class="mobile-header">
+    <a href="/" class="mobile-logo">
+      <img src="/camera-icon.svg" alt="" width="36" height="39" />
+      <span>Lance Shields<br>Photography</span>
+    </a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <img src="/images/menu-icon.svg" alt="" width="30" height="30" id="hamburger-icon" />
+    </button>
+  </div>
   <div class="site-layout">
     <aside class="site-sidebar">
       <div class="sidebar-inner">
@@ -57,8 +63,7 @@ const currentPath = Astro.url.pathname;
               <li><a href="/eighty-sixed-in-la" class:list={[{ active: currentPath === '/eighty-sixed-in-la' }]}>Eighty-Sixed in LA</a></li>
               <li><a href="/we-got-seoul" class:list={[{ active: currentPath === '/we-got-seoul' }]}>We Got Seoul</a></li>
               <li><a href="/return-to-tokyo" class:list={[{ active: currentPath === '/return-to-tokyo' }]}>Return to Tokyo</a></li>
-              <li><a href="/painted-in-kyoto" class:list={[{ active: currentPath === '/painted-in-kyoto' }]}>Painted in Kyoto</a></li>
-              <li><a href="/light" class:list={[{ active: currentPath === '/light' }]}>Light</a></li>
+              <li><a href="/painted-in-kyoto" class:list={[{ active: currentPath === '/painted-in-kyoto' }]}>Painted in Kyoto Light</a></li>
             </ul>
           </div>
           <a href="/about" class="nav-link" class:list={[{ active: currentPath === '/about' }]}>About</a>
@@ -101,7 +106,7 @@ const currentPath = Astro.url.pathname;
     hamburger?.addEventListener('click', () => {
       const isOpen = sidebar?.classList.toggle('open');
       if (hamburgerIcon) {
-        hamburgerIcon.src = isOpen ? '/images/menu-close.svg' : '/images/menu.svg';
+        hamburgerIcon.src = isOpen ? '/images/close.svg' : '/images/menu-icon.svg';
       }
     });
 
@@ -114,7 +119,7 @@ const currentPath = Astro.url.pathname;
       const dx = e.touches[0].clientX - touchStartX;
       if (dx < -40) {
         sidebar.classList.remove('open');
-        if (hamburgerIcon) hamburgerIcon.src = '/images/menu.svg';
+        if (hamburgerIcon) hamburgerIcon.src = '/images/menu-icon.svg';
       }
     }, { passive: true });
   </script>

@@ -97,6 +97,37 @@ a {
   color: #434137;
 }
 
+/* ---- Mobile Header ---- */
+
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 160;
+  padding: 16px 20px;
+  background: var(--bg-page);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #434137;
+  line-height: 1.2;
+}
+
+.mobile-logo img {
+  width: 36px;
+  height: auto;
+  flex-shrink: 0;
+}
+
 .brand-icon {
   flex-shrink: 0;
   margin-top: 2px;
@@ -266,6 +297,38 @@ a {
   opacity: 0.7;
 }
 
+/* ---- All Projects Grid ---- */
+
+.all-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.all-project-card {
+  display: block;
+}
+
+.all-project-card img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  background: #f0efe9;
+  transition: opacity 0.3s;
+}
+
+.all-project-card:hover img {
+  opacity: 0.85;
+}
+
+.all-project-title {
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-heading);
+}
+
 /* ---- Video Module ---- */
 
 .video-module {}
@@ -377,13 +440,20 @@ a {
 /* ---- About Page ---- */
 
 .about-page {
-  padding: var(--space-section) 0;
+  padding: 0 0 var(--space-section) 0;
 }
 
 .about-page h1 {
   font-size: clamp(28px, 5vw, 42px);
   font-weight: 700;
   margin: 0 0 24px;
+}
+
+.about-photo {
+  width: 100%;
+  max-width: 640px;
+  margin-bottom: 32px;
+  display: block;
 }
 
 .about-bio {
@@ -481,13 +551,20 @@ a {
   cursor: default;
 }
 
+.form-status {
+  font-size: 14px;
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+
 /* ---- Videos / Zines ---- */
 
 .video-grid,
 .zine-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 32px;
+  max-width: 640px;
 }
 
 .video-card iframe {
@@ -502,6 +579,44 @@ a {
   margin-top: 12px;
   font-size: 16px;
   font-weight: 600;
+}
+
+.zine-list {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.zine-entry h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  font-family: var(--font-heading);
+}
+
+.zine-date {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.zine-entry p {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+.zine-cover {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.zine-quote {
+  font-style: italic;
+  color: var(--muted);
 }
 
 .zine-card-image {
@@ -524,11 +639,7 @@ a {
 
 .hamburger {
   display: none;
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 200;
-  background: var(--bg-page);
+  background: none;
   border: none;
   cursor: pointer;
   padding: 4px;
@@ -540,7 +651,11 @@ a {
 }
 
 @media (max-width: 768px) {
-  .hamburger {
+  .mobile-header .hamburger {
+    display: block;
+  }
+
+  .mobile-header {
     display: flex;
   }
 
@@ -560,7 +675,6 @@ a {
     background: var(--bg-page);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
-    padding-top: 60px;
   }
 
   .site-sidebar.open {
@@ -568,13 +682,16 @@ a {
   }
 
   .sidebar-inner {
-    padding: 20px 24px;
+    padding: 80px 24px 20px;
     height: auto;
   }
 
-  .nav-brand {
-    margin-bottom: 16px;
-    font-size: 18px;
+  .site-sidebar .nav-brand {
+    display: none;
+  }
+
+  .site-main {
+    padding-top: 70px;
   }
 
   .sidebar-footer {
@@ -582,6 +699,10 @@ a {
   }
 
   .featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .all-projects-grid {
     grid-template-columns: 1fr;
   }
 

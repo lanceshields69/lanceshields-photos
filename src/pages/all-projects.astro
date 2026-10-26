@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="All Projects" description="All photography projects by Lance Shields.">
+  <div class="section" style="padding-top: 0">
+    <div class="wrap">
+      <div class="section-header">
+        <h1>All Projects</h1>
+      </div>
+
+      <div class="all-projects-grid">
+        {projects.map((project) => (
+          <a href={`/${project.id}`} class="all-project-card">
+            <img
+              src={project.data.coverImage}
+              alt={project.data.title}
+              loading="lazy"
+              width="600"
+              height="450"
+            />
+            <div class="all-project-title">{project.data.title}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

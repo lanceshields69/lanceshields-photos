@@ -3,8 +3,11 @@ title: "We Got Seoul"
 description: "Exploring the streets and rhythms of Seoul, South Korea."
 date: 2023-07-18
 featured: false
+videos:
+  - url: "https://player.vimeo.com/video/1031065905?h=b84f7fafc5"
+    after: 1
 order: 7
-coverImage: "/images/we-got-seoul/01.jpg"
+coverImage: "/images/we-got-seoul/cover.jpg"
 photos:
   - "/images/we-got-seoul/01.jpg"
   - "/images/we-got-seoul/02.jpg"

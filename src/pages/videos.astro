@@ -3,13 +3,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Videos" description="Videos by Lance Shields.">
-  <div class="section">
+  <div class="section" style="padding-top: 0">
     <div class="wrap">
       <div class="section-header">
         <h1>Videos</h1>
       </div>
       <div class="video-grid">
-        <!-- Add video embeds here -->
+        <div class="video-card">
+          <iframe src="https://player.vimeo.com/video/1031065905?h=b84f7fafc5" title="We Got Seoul" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowfullscreen></iframe>
+          <div class="video-card-title">We Got Seoul</div>
+        </div>
+        <div class="video-card">
+          <iframe src="https://player.vimeo.com/video/864663006?h=b7e99d04b2" title="Painted in Kyoto Light" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowfullscreen></iframe>
+          <div class="video-card-title">Painted in Kyoto Light</div>
+        </div>
+        <div class="video-card">
+          <iframe src="https://player.vimeo.com/video/943507090?h=2a28d38d44" title="Video" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowfullscreen></iframe>
+          <div class="video-card-title">A collection of photos from 2022 to 2024</div>
+        </div>
       </div>
     </div>
   </div>
