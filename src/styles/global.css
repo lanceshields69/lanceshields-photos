@@ -85,14 +85,14 @@ a {
 }
 
 .nav-brand {
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: 0.02em;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 28px;
   color: #434137;
 }
@@ -115,15 +115,15 @@ a {
 .mobile-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 18px;
+  gap: 8px;
+  font-size: 14px;
   font-weight: 600;
   color: #434137;
   line-height: 1.2;
 }
 
 .mobile-logo img {
-  width: 36px;
+  width: 29px;
   height: auto;
   flex-shrink: 0;
 }
@@ -709,6 +709,19 @@ a {
 
   .featured-grid {
     grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .project-card {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 50px;
+  }
+
+  .featured-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1/1;
   }
 
   .all-projects-grid {
