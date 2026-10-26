@@ -1,0 +1,42 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { title, description, photos } = project.data;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="project-page">
+    <div class="wrap">
+      <nav class="project-nav">
+        <a href="/">&larr; All projects</a>
+      </nav>
+
+      <header class="project-header">
+        <h1>{title}</h1>
+        <p>{description}</p>
+      </header>
+
+      <div class="gallery-grid">
+        {photos.map((photo: string) => (
+          <img
+            src={photo}
+            alt={`${title} photograph`}
+            loading="lazy"
+            width="600"
+            height="450"
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

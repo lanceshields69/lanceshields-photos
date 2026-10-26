@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About / Contact" description="Lance Shields is a lens-based artist living in San Francisco. Get in touch.">
+  <div class="about-page">
+    <div class="wrap">
+      <h1>About / Contact</h1>
+
+      <div class="about-bio">
+        <p>Lance Shields is a lens-based artist living in San Francisco. He was raised in the mountains of San Diego, CA, and at the age of twelve, he was introduced to photography by his science teacher.</p>
+        <p>He holds a BFA from the San Francisco Art Institute, where he studied sculpture. He has published three photo zines <em>&ldquo;Nothing with a Name&rdquo;</em>, <em>&ldquo;Surface Tension&rdquo;</em>, and <em>&ldquo;Remembering Seal Rock&rdquo;</em>.</p>
+        <p>He is inspired by photographers Gregory Halpern, Saul Leiter, and William Eggleston, to name a few. Shields seeks to look through a lens to discover the beauty in the overlooked moments of everyday life.</p>
+        <p>When not taking photographs, he works as a design director at Adobe. You can follow him on <a href="https://www.instagram.com/lanceshields" target="_blank" rel="noopener">Instagram</a>.</p>
+      </div>
+
+      <div class="about-exhibitions">
+        <h2>Group Exhibitions</h2>
+        <ul class="exhibition-list">
+          <li>2024 &mdash; Metaphors of Recent Times &mdash; PhotoAlliance, City Hall, San Francisco, CA</li>
+          <li>2024 &mdash; Camera Work: Trees and Water &mdash; Black Box Gallery, Portland, OR</li>
+          <li>2024 &mdash; TPS 32: The International &mdash; Cain Art Gallery, Corpus Christi, TX</li>
+          <li>2024 &mdash; 2024 SF Open Studios Group Exhibit &mdash; SomaArts Main Gallery, San Francisco, CA</li>
+          <li>2024 &mdash; ArtSpan&rsquo;s Juried Benefit Art Auction &mdash; Heron Arts Gallery, San Francisco, CA</li>
+        </ul>
+      </div>
+
+      <div class="contact-section">
+        <h2>Get in Touch</h2>
+        <form class="contact-form" action="https://formspree.io/f/your-form-id" method="POST">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" required />
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required></textarea>
+
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

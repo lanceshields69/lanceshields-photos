@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort((a, b) => {
+  if (a.data.featured && !b.data.featured) return -1;
+  if (!a.data.featured && b.data.featured) return 1;
+  return a.data.order - b.data.order;
+});
+---
+
+<BaseLayout title="Home" description="Lance Shields Photography — lens-based artist living in San Francisco. Selected work, photo projects, and zines.">
+  <section class="home-hero">
+    <div class="wrap">
+      <h1>Lance Shields Photography</h1>
+      <p>Selected Work</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-header">
+        <h2>Recent Projects</h2>
+      </div>
+
+      <div class="project-grid">
+        {
+          projects.map((project) => (
+            <a href={`/${project.id}`} class="project-card">
+              <div class="project-card-image">
+                <img
+                  src={project.data.coverImage}
+                  alt={project.data.title}
+                  loading="lazy"
+                  width="600"
+                  height="450"
+                />
+              </div>
+              <div class="project-card-title">{project.data.title}</div>
+              <div class="project-card-desc">{project.data.description}</div>
+            </a>
+          ))
+        }
+      </div>
+
+      {
+        projects.length === 0 && (
+          <p style="color: var(--muted); margin-top: 40px;">
+            Add projects to <code>src/content/projects/</code> as markdown files.
+          </p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

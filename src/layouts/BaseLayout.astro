@@ -1,0 +1,77 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = 'Lance Shields Photography — lens-based artist living in San Francisco.',
+  ogImage = '/images/og-default.jpg',
+} = Astro.props;
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title} - Lance Shields Photography</title>
+  <meta name="description" content={description} />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={`${title} - Lance Shields Photography`} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImage} />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" href="/favicon.ico" />
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">Lance Shields Photography</a>
+      <ul class="nav-links">
+        <li class="nav-dropdown">
+          <button class="nav-dropdown-toggle" aria-expanded="false">Selected Work</button>
+          <ul class="nav-dropdown-menu" role="menu">
+            <li><a href="/strange-nature" class:list={['', { active: currentPath === '/strange-nature' }]}>Strange Nature</a></li>
+            <li><a href="/fragments" class:list={['', { active: currentPath === '/fragments' }]}>Fragments</a></li>
+            <li><a href="/nothing-with-a-name" class:list={['', { active: currentPath === '/nothing-with-a-name' }]}>Nothing with a Name</a></li>
+            <li><a href="/surface-tension" class:list={['', { active: currentPath === '/surface-tension' }]}>Surface Tension</a></li>
+            <li><a href="/remembering-seal-rock" class:list={['', { active: currentPath === '/remembering-seal-rock' }]}>Remembering Seal Rock</a></li>
+            <li><a href="/eighty-sixed-in-la" class:list={['', { active: currentPath === '/eighty-sixed-in-la' }]}>Eighty-Sixed in LA</a></li>
+            <li><a href="/we-got-seoul" class:list={['', { active: currentPath === '/we-got-seoul' }]}>We Got Seoul</a></li>
+            <li><a href="/return-to-tokyo" class:list={['', { active: currentPath === '/return-to-tokyo' }]}>Return to Tokyo</a></li>
+            <li><a href="/painted-in-kyoto" class:list={['', { active: currentPath === '/painted-in-kyoto' }]}>Painted in Kyoto</a></li>
+            <li><a href="/light" class:list={['', { active: currentPath === '/light' }]}>Light</a></li>
+          </ul>
+        </li>
+        <li><a href="/about" class:list={['', { active: currentPath === '/about' }]}>About</a></li>
+        <li><a href="/videos" class:list={['', { active: currentPath === '/videos' }]}>Videos</a></li>
+        <li><a href="/photo-zines" class:list={['', { active: currentPath === '/photo-zines' }]}>Photo zines</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>Lance Shields &copy; All rights reserved</span>
+      <div class="footer-share">
+        <span>Share</span>
+        <a href="https://www.instagram.com/lanceshields" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
