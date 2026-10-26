@@ -1,8 +1,26 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  images: ImageMetadata[];
+}
+const { images } = Astro.props;
+---
+
 <div class="carousel" id="home-carousel">
   <div class="carousel-track">
-    {Astro.props.images.map((img, i) => (
+    {images.map((img, i) => (
       <div class="carousel-slide" class:list={[{ active: i === 0 }]}>
-        <img src={img} alt="" loading={i === 0 ? 'eager' : 'lazy'} />
+        <Image
+          src={img}
+          alt=""
+          widths={[400, 800, 1200, 1600, 2000]}
+          sizes="(max-width: 768px) 100vw, 80vw"
+          format="avif"
+          quality={85}
+          loading={i === 0 ? 'eager' : 'lazy'}
+        />
       </div>
     ))}
     <button class="carousel-side-arrow carousel-prev" id="carousel-prev" aria-label="Previous">
@@ -14,7 +32,7 @@
   </div>
 
   <div class="carousel-thumbs" id="carousel-thumbs">
-    {Astro.props.images.map((img, i) => (
+    {images.map((img, i) => (
       <button
         type="button"
         class="carousel-thumb"
@@ -22,7 +40,7 @@
         data-index={i}
         aria-label={`Slide ${i + 1}`}
       >
-        <img src={img} alt="" loading="lazy" />
+        <Image src={img} alt="" width={60} height={60} format="avif" quality={85} loading="lazy" />
       </button>
     ))}
   </div>
