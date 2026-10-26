@@ -1,6 +1,23 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import sharp from 'sharp';
+import path from 'path';
+
+// Global image optimization — eager import all project source images at build time
+const allImageModules = import.meta.glob('../assets/images/*/*.{jpg,jpeg,png}', { eager: true }) as Record<string, { default: ImageMetadata }>;
+
+// Group imported images by project slug
+const projectImageLookup: Record<string, Record<string, ImageMetadata>> = {};
+for (const [filepath, mod] of Object.entries(allImageModules)) {
+  const parts = filepath.split('/');
+  const slug = parts[parts.length - 2];
+  const filename = parts[parts.length - 1];
+  if (!projectImageLookup[slug]) projectImageLookup[slug] = {};
+  projectImageLookup[slug][filename] = mod.default;
+}
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -13,16 +30,51 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { title, description, photos, videos, textAfter } = project.data;
 const bodyText = project.body;
+const slug = project.id;
 
 // Split body text on <!--split--> marker
 const splitIdx = bodyText.indexOf('<!--split-->');
 const textPart1 = splitIdx > 0 ? bodyText.slice(0, splitIdx).trim() : bodyText;
 const textPart2 = splitIdx > 0 ? bodyText.slice(splitIdx + 13).trim() : '';
 
+// Lookups for the current project (empty for projects without assets)
+const imgLookup = projectImageLookup[slug] || {};
+
+// Precompute average colors for this project's placeholders
+const colorLookup: Record<string, string> = {};
+const assetsDir = path.join(process.cwd(), `src/assets/images/${slug}`);
+if (Object.keys(imgLookup).length > 0) {
+  for (const filename of Object.keys(imgLookup)) {
+    const buf = await sharp(path.join(assetsDir, filename)).resize(1, 1).ensureAlpha().raw().toBuffer();
+    colorLookup[filename] = '#' + [...buf.slice(0, 3)].map((c: number) => c.toString(16).padStart(2, '0')).join('');
+  }
+}
+
+// Pre-generate lightbox-quality (2000px, quality 90) URLs for this project
+const lightboxSrcMap: Record<string, string> = {};
+for (const photo of photos) {
+  const filename = photo.split('/').pop()!;
+  const img = imgLookup[filename];
+  if (img) {
+    const optimized = await getImage({ src: img, width: 2000, quality: 90, format: 'avif' });
+    lightboxSrcMap[filename] = optimized.src;
+  }
+}
+
 // Build a merged list of gallery items: photos + videos at correct positions
-const galleryItems: { type: 'photo' | 'video'; index: number; src?: string; url?: string }[] = [];
+const galleryItems: { type: 'photo' | 'video'; index: number; src?: string; url?: string; imageMeta?: ImageMetadata; lightboxSrc?: string; bgColor?: string }[] = [];
 photos.forEach((photo, i) => {
-  galleryItems.push({ type: 'photo', index: i, src: photo });
+  const filename = photo.split('/').pop()!;
+  const imgMeta = imgLookup[filename];
+  const bgColor = imgMeta ? (colorLookup[filename] || undefined) : undefined;
+  galleryItems.push({
+    type: 'photo',
+    index: i,
+    src: imgMeta ? undefined : photo,
+    imageMeta: imgMeta,
+    lightboxSrc: imgMeta ? (lightboxSrcMap[filename] || undefined) : undefined,
+    bgColor,
+  });
   // Insert videos after this photo index
   videos?.forEach((v) => {
     if (v.after === i) galleryItems.push({ type: 'video', index: i, url: v.url });
@@ -36,13 +88,27 @@ photos.forEach((photo, i) => {
       <div class="gallery-track">
         {galleryItems.map((item, i) => (
           <>
-            {item.type === 'photo' && item.src && (
-              <div class="gallery-item" data-index={i}>
-                <img
-                  src={item.src}
-                  alt={`${title} photograph`}
-                  loading={i < 2 ? 'eager' : 'lazy'}
-                />
+            {item.type === 'photo' && (item.imageMeta || item.src) && (
+              <div class="gallery-item" data-index={i} data-lightbox-src={item.lightboxSrc}>
+                <span class="gallery-image-bg" style={item.bgColor ? `background-color:${item.bgColor}` : undefined}>
+                {item.imageMeta ? (
+                  <Image
+                    src={item.imageMeta}
+                    alt={`${title} photograph`}
+                    widths={[400, 800, 1200, 1600]}
+                    sizes="(max-width: 768px) 100vw, 80vw"
+                    format="avif"
+                    quality={85}
+                    loading={i < 2 ? 'eager' : 'lazy'}
+                  />
+                ) : (
+                  <img
+                    src={item.src}
+                    alt={`${title} photograph`}
+                    loading={i < 2 ? 'eager' : 'lazy'}
+                  />
+                )}
+                </span>
               </div>
             )}
             {item.type === 'video' && item.url && (
@@ -105,7 +171,16 @@ photos.forEach((photo, i) => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     const bar = document.getElementById('gallery-progress-bar');
     const items = gallery.querySelectorAll('.gallery-item');
-    const photos = [...items].map(el => el.querySelector('img')?.src || '').filter(Boolean);
+    const photos = [...items].map(el => el.dataset.lightboxSrc || el.querySelector('img')?.src || '').filter(Boolean);
+
+    // Fade-in images over color placeholders on load
+    items.forEach(el => {
+      const img = el.querySelector('img');
+      if (!img) return;
+      if (img.complete) { img.classList.add('is-loaded'); return; }
+      img.addEventListener('load', () => img.classList.add('is-loaded'), { once: true });
+      img.addEventListener('error', () => img.classList.add('is-loaded'), { once: true });
+    });
 
     function update() {
       const scrollLeft = gallery.scrollLeft;
@@ -291,12 +366,35 @@ photos.forEach((photo, i) => {
     align-items: center;
   }
 
-  .gallery-item img {
+  .gallery-item img,
+  .gallery-item picture img {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .gallery-item img.is-loaded,
+  .gallery-item picture img.is-loaded {
+    opacity: 1;
+  }
+
+  .gallery-item picture {
+    display: contents;
+  }
+
+  .gallery-image-bg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: auto;
+  }
+
+  .gallery-image-bg img,
+  .gallery-item > img {
     height: 100%;
     width: auto;
     max-width: 90vw;
     object-fit: contain;
-    display: block;
   }
 
   .gallery-video {
@@ -366,11 +464,25 @@ photos.forEach((photo, i) => {
       scroll-snap-align: none;
     }
 
-    .gallery-item img {
+    .gallery-item img,
+    .gallery-item picture img {
       width: 100%;
       height: auto;
       max-width: 100%;
       display: block;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .gallery-item img.is-loaded,
+    .gallery-item picture img.is-loaded {
+      opacity: 1;
+    }
+
+    .gallery-image-bg {
+      width: 100%;
+      height: auto;
     }
 
     .gallery-video {
