@@ -59,14 +59,43 @@ const { images } = Astro.props;
     const interval = 3000;
     let timer;
 
+    // Smoothly center the active thumbnail inside the thumbnail strip's own
+    // horizontal scroller. This scrolls ONLY the strip container — never the
+    // page — so auto-advance doesn't yank the viewport back to the top.
+    function scrollThumbIntoView(thumb) {
+      if (!thumbsContainer || !thumb) return;
+      const containerCenter = thumbsContainer.clientWidth / 2;
+      const centerTarget = thumb.offsetLeft - thumbsContainer.offsetLeft + thumb.offsetWidth / 2;
+      const target = centerTarget - containerCenter;
+      const start = thumbsContainer.scrollLeft;
+      const maxScroll = thumbsContainer.scrollWidth - thumbsContainer.clientWidth;
+      const clamped = Math.max(0, Math.min(target, maxScroll));
+      const distance = clamped - start;
+      if (Math.abs(distance) < 1) return;
+
+      const duration = 300;
+      let startTime = null;
+      function step(ts) {
+        if (startTime === null) startTime = ts;
+        const progress = Math.min((ts - startTime) / duration, 1);
+        // Ease in-out
+        const eased = progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        thumbsContainer.scrollLeft = start + distance * eased;
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
     function goTo(index) {
       slides[current].classList.remove('active');
       thumbs[current].classList.remove('active');
       current = (index + slides.length) % slides.length;
       slides[current].classList.add('active');
       thumbs[current].classList.add('active');
-      // Scroll thumbnail into view
-      thumbs[current]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      // Keep the active thumbnail centered within the strip only
+      scrollThumbIntoView(thumbs[current]);
     }
 
     function next() { goTo(current + 1); }
@@ -79,6 +108,8 @@ const { images } = Astro.props;
     });
     prevBtn?.addEventListener('click', () => { prev(); start(); });
     nextBtn?.addEventListener('click', () => { next(); start(); });
+
+    document.addEventListener('pagehide', () => clearInterval(timer));
   })();
 </script>
 
